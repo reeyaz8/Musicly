@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_audio_query/flutter_audio_query.dart';
 
-class Song with ChangeNotifier{
+class Songs with ChangeNotifier{
 
   List<SongInfo> _songList = [];
 

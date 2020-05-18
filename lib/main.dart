@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:Musicly/screens/homepage.dart';
 import 'package:Musicly/services/album.dart';
 import 'package:Musicly/services/playlist.dart';
+import 'package:Musicly/services/songPlayer.dart';
 import 'package:Musicly/services/song_state.dart';
 import 'package:Musicly/services/songs.dart';
 import 'package:flutter/material.dart';
@@ -16,10 +17,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
          providers: [
-          ChangeNotifierProvider<Song>(create: (_) => Song()),
+          ChangeNotifierProvider<Songs>(create: (_) => Songs()),
           ChangeNotifierProvider<Album>(create: (_) => Album()),
           ChangeNotifierProvider<Playlist>(create: (_) => Playlist()),
-          ChangeNotifierProvider<SongStatus>(create: (_) => SongStatus())
+          ChangeNotifierProvider<SongStatus>(create: (_) => SongStatus()),
+          ChangeNotifierProvider<Player>(create: (_) => Player())
+
          ],
             child: MaterialApp(
           title: 'Flutter Demo',
@@ -36,7 +39,7 @@ class MyApp extends StatelessWidget {
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final songGetter = Provider.of<Song>(context, listen: false);
+    final songGetter = Provider.of<Songs>(context, listen: false);
     final albumGetter = Provider.of<Album>(context, listen: false);
     final playlistGetter = Provider.of<Playlist>(context, listen: false);
     songGetter.getSongList();
