@@ -18,7 +18,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
    int _selectedIndex = 0;
 
-   double sliderValue = 0.0;
+   double sliderValue = 0.2;
     List<Widget> pages= [
       AlbumPage(),
       SongPage(),
@@ -173,8 +173,8 @@ class _HomePageState extends State<HomePage> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                    Text('$sliderValue'),
-                                    Text(min+':'+sec),
+                                    Text('1:21'),
+                                    Text('5:47'),
                               ],
                               )
                             ),

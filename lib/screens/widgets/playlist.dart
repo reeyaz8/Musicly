@@ -1,3 +1,4 @@
+import 'package:Musicly/screens/widgets/playlist_playlist.dart';
 import 'package:Musicly/services/playlist.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +17,8 @@ class PlaylistPage extends StatelessWidget {
         itemBuilder: (context, int index) {
           return GestureDetector(
             onTap: () {
-              print(index);
+              songGetter.getdetailplaylist(index);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistDetail(title:songGetter.PlaylistList[index].name, index:index)));
             },
               child: Card(
               margin: EdgeInsets.only(bottom: 16.0, left: 15.0, right: 15.0),
