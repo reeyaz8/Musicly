@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:Musicly/screens/homepage.dart';
 import 'package:Musicly/services/album.dart';
+import 'package:Musicly/services/current_playing_list.dart';
 import 'package:Musicly/services/playlist.dart';
 import 'package:Musicly/services/songPlayer.dart';
 import 'package:Musicly/services/song_state.dart';
@@ -21,7 +22,8 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider<Album>(create: (_) => Album()),
           ChangeNotifierProvider<Playlist>(create: (_) => Playlist()),
           ChangeNotifierProvider<SongStatus>(create: (_) => SongStatus()),
-          ChangeNotifierProvider<Player>(create: (_) => Player())
+          ChangeNotifierProvider<Player>(create: (_) => Player()),
+          ChangeNotifierProvider<CurrentList>(create: (_) => CurrentList()),
 
          ],
             child: MaterialApp(

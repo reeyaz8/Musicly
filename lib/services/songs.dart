@@ -7,14 +7,21 @@ class Songs with ChangeNotifier{
 
   final FlutterAudioQuery audioQuery = FlutterAudioQuery();
 
+  List<String> _playingList = [];
+
   List<SongInfo> get songList => _songList; 
 
+  List<String> get listSong => _playingList; 
+
+  List<String> _songListMaker =[];
+
+  List<String> get songListMaker => _songListMaker;
+
   getSongList() async{
-
     _songList = await audioQuery.getSongs(sortType: SongSortType.DEFAULT);
-
     notifyListeners();
-
+    for (var item in songList) {
+      _songListMaker.add(item.filePath);
+    }
   }
-
 }

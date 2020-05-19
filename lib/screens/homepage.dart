@@ -2,8 +2,11 @@ import 'package:Musicly/screens/widgets/album.dart';
 import 'package:Musicly/screens/widgets/favorites.dart';
 import 'package:Musicly/screens/widgets/playlist.dart';
 import 'package:Musicly/screens/widgets/songs.dart';
+import 'package:Musicly/services/songPlayer.dart';
 import 'package:Musicly/services/song_state.dart';
+import 'package:Musicly/services/songs.dart';
 import 'package:flutter/material.dart';
+import 'package:marquee/marquee.dart';
 import 'package:provider/provider.dart';
 import 'dart:math' as math;
 
@@ -23,6 +26,8 @@ class _HomePageState extends State<HomePage> {
       FavouritesPage()
     ];
 
+    String min='0', sec='0';
+
     List<String> title =[
       'Album',
       'Song',
@@ -34,7 +39,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final songState = Provider.of<SongStatus>(context, listen: false);
+    final songState = Provider.of<SongStatus>(context);
+    final player = Provider.of<Player>(context);
+    final songGetter = Provider.of<Songs>(context);
+    final statusGetter = Provider.of<SongStatus>(context);
+
+    // final songState = Provider.of<SongStatus>(context, listen: false);
+
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
@@ -86,7 +97,9 @@ class _HomePageState extends State<HomePage> {
                                 margin: EdgeInsets.only(top:7.0),
                                 width: MediaQuery.of(context).size.width - 70.0,
                                 height: 25.0,
-                                child: Text('Breathless shankar mahabdevan', textAlign: TextAlign.center, style: TextStyle(fontSize:16.0, color: Colors.white),)),
+                                child: Marquee(text: songState.currentSongName, scrollAxis: Axis.horizontal,
+                                blankSpace: MediaQuery.of(context).size.width-80.0,
+                                style: TextStyle(fontSize:16.0, color: Colors.white),)),
                                 SizedBox(height: 8.0),
                               Container(
                                 width: MediaQuery.of(context).size.width-70.0,
@@ -95,9 +108,24 @@ class _HomePageState extends State<HomePage> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children:<Widget>[
                                     SizedBox(width: 20.0),
-                                    Container(child: IconButton(padding:EdgeInsets.all(0.0), iconSize: 30.0, onPressed: () {print('prevoius');}, color: Colors.white, icon: Icon(Icons.skip_previous),)),
+                                    Container(child: IconButton(padding:EdgeInsets.all(0.0), iconSize: 30.0, onPressed: () {
+                                        player.playSong(songGetter.songListMaker[songState.indexValue-1]);
+                                        songState.decrementCurrentIndex();
+                                        statusGetter.changeState(songGetter.songList[songState.indexValue].id);
+                                        songState.changeSongName(songGetter.songList[songState.indexValue].displayName);
+                                        int duration = int.parse(songGetter.songList[songState.indexValue].duration);
+                                        setState(() {
+                                        min =( duration/60000).round().toString();
+                                        sec = ((duration/1000)%60).round().toString();
+                                        });
+                                    }, color: Colors.white, icon: Icon(Icons.skip_previous),)),
                                     SizedBox(width: 100.0),
-                                    Container(child: Transform.rotate(angle :180 * math.pi / 180 ,child: IconButton(padding:EdgeInsets.all(0.0), color: Colors.white, iconSize: 30.0, onPressed: () {print('forward');}, icon: Icon(Icons.skip_previous),))),
+                                    Container(child: Transform.rotate(angle :180 * math.pi / 180 ,child: IconButton(padding:EdgeInsets.all(0.0), color: Colors.white, iconSize: 30.0, onPressed: () {
+                                        player.playSong(songGetter.songListMaker[songState.indexValue+1]);
+                                        statusGetter.changeState(songGetter.songList[songState.indexValue+1].id);
+                                        songState.incrementCurrentIndex();
+                                        songState.changeSongName(songGetter.songList[songState.indexValue].displayName);
+                                    }, icon: Icon(Icons.skip_previous),))),
                                 ],
                                 ),
                               )
@@ -123,14 +151,18 @@ class _HomePageState extends State<HomePage> {
                           children: <Widget>[
                             SizedBox(height:20.0),
                             Container(
-                              child: Text('Breathless Shaknar Mahadev', style: TextStyle(fontSize:18.0),),
+                              width: MediaQuery.of(context).size.width,
+                              height: 30.0,
+                              child: Marquee(text: songState.currentSongName, scrollAxis: Axis.horizontal,
+                                blankSpace: MediaQuery.of(context).size.width,
+                                style: TextStyle(fontSize:16.0, color: Colors.white),)
                             ),
                             SizedBox(height:20.0),
                             Image.asset('images/splashscreen.jpg',
                                   height: 200.0,
                                   width: MediaQuery.of(context).size.width-10.0,
                             ),
-                            Slider(value: sliderValue, min:0.0, max: 10.0, label: '$sliderValue', onChanged: (double newValue) {
+                            Slider(value: sliderValue, label: '$sliderValue', onChanged: (double newValue) {
                               setState(() {
                               sliderValue = double.parse(newValue.toStringAsFixed(2));
                               });
@@ -142,8 +174,9 @@ class _HomePageState extends State<HomePage> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
                                     Text('$sliderValue'),
-                                    Text('10.0'),
-                              ],)
+                                    Text(min+':'+sec),
+                              ],
+                              )
                             ),
                             SizedBox(height: 10.0,),
                             Container(
@@ -152,25 +185,36 @@ class _HomePageState extends State<HomePage> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children:<Widget>[
                                   new Container(
-                                    child: IconButton(icon: Icon(Icons.replay), iconSize: 35.0, onPressed: (){},)
+                                    child: IconButton(icon: Icon(Icons.replay), iconSize: 35.0, onPressed: (){
+                                      player.playSong(songGetter.songListMaker[songState.indexValue]);
+                                    },)
                                   ),
+                                  new Container(child: IconButton(icon: Icon(Icons.favorite_border), iconSize: 35.0 ,onPressed: null)),
                                   new Container(
                                     child: IconButton(icon: Icon(Icons.shuffle), iconSize: 35.0 ,onPressed: () {}),
                                   ),
                                 ],
                               ),
                             ),
-                            SizedBox(height:10.0),
+                            SizedBox(height:30.0),
                              Container(
                               width: MediaQuery.of(context).size.width - 80.0,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children:<Widget>[
                                   new Container(
-                                    child: IconButton(icon: Icon(Icons.skip_previous), iconSize: 35.0, onPressed: (){},)
+                                    child: IconButton(icon: Icon(Icons.skip_previous), iconSize: 35.0, onPressed: (){
+                                       player.playSong(songGetter.songListMaker[songState.indexValue-1]);
+                                        songState.decrementCurrentIndex();
+                                        songState.changeSongName(songGetter.songList[songState.indexValue].displayName);
+                                    },)
                                   ),
                                   new Container(
-                                    child: IconButton(icon: Icon(Icons.skip_next), iconSize: 35.0 ,onPressed: () {}),
+                                    child: IconButton(icon: Icon(Icons.skip_next), iconSize: 35.0 ,onPressed: () {
+                                       player.playSong(songGetter.songListMaker[songState.indexValue+1]);
+                                        songState.incrementCurrentIndex();
+                                        songState.changeSongName(songGetter.songList[songState.indexValue].displayName);
+                                    }),
                                   ),
                                 ],
                               ),
@@ -187,7 +231,11 @@ class _HomePageState extends State<HomePage> {
         floatingActionButton: FloatingActionButton(
           heroTag: 'center_btn',
           onPressed: (){},
-        child: songState.songIndex == null ? Icon(Icons.play_arrow):Icon(Icons.shuffle),
+        child: player.isPaused == true ? IconButton(icon:Icon(Icons.play_arrow), onPressed: (){
+            player.resumeSong();
+        },):IconButton(icon:Icon(Icons.pause), onPressed: (){
+            player.pauseSong();
+        },),
         foregroundColor: Colors.white,
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

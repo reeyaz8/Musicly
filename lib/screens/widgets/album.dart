@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:Musicly/screens/widgets/album_playlist.dart';
 import 'package:Musicly/services/album.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,9 @@ class AlbumPage extends StatelessWidget {
         itemBuilder: (context, int index) {
           return GestureDetector(
             onTap: () {
-              print(index);
+              albumGetter.clearAlbumPlaylist();
+              albumGetter.albumPlaylist(albumGetter.AlbumList[index].id);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Lister(title:albumGetter.AlbumList[index].artist)));
             },
               child: Card(
               margin: EdgeInsets.only(bottom: 16.0, left: 15.0, right: 15.0),

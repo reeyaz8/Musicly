@@ -6,11 +6,19 @@ class Player with ChangeNotifier{
 
   String _filePath = '';
 
+  String _currentSongName = '';
+
   bool pause = true;
 
   bool get isPaused => pause;
 
   String get filePath => _filePath;
+
+  String get currentSongName => _currentSongName;
+
+  Duration d;
+
+  Duration get totalTime => d;
 
   void getFilePath(String path){
 
@@ -18,22 +26,33 @@ class Player with ChangeNotifier{
 
   }
 
+  //  duration(){
+  //   audioPlayer.onDurationChanged.listen((Duration dur) {
+  //       d = dur;
+        
+  //       // notifyListeners();
+  //   });
+  // }
+
+
   void playSong(String path) {
     audioPlayer.stop();
+    pause = false;
+    notifyListeners();
+    // duration();
     audioPlayer.play(path);
-    // audioPlayer.m
   }
 
   void pauseSong() {
     pause = true;
-    audioPlayer.pause();
     notifyListeners();
+    audioPlayer.pause();
+    
   }
 
   void resumeSong() {
     pause = false;
-    audioPlayer.resume();
     notifyListeners();
+    audioPlayer.resume();
   }
-  
 }
